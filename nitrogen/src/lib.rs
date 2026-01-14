@@ -9,11 +9,13 @@ pub use option::OptionExt;
 
 pub use nitro::Nitro;
 
+#[track_caller]
 #[expect(non_snake_case)]
 pub fn Ok<T, E: std::error::Error>(value: T) -> Result<T, E, ()> {
     Result::Ok(value)
 }
 
+#[track_caller]
 #[expect(non_snake_case)]
 pub fn Err<T, E: std::error::Error + 'static>(err: E) -> Result<T, E, ()> {
     Result::Err(Nitro::without_ctx(err))

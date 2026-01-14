@@ -38,6 +38,7 @@ where
         }
     }
 
+    #[track_caller]
     fn map_ctx<NewCTX, F>(self, f: F) -> Result<Self::Success, Self::Error, NewCTX>
     where
         F: FnOnce(Self::CTX) -> NewCTX,
@@ -71,6 +72,7 @@ where
         }
     }
 
+    #[track_caller]
     fn map_ctx<NewCTX, F>(self, f: F) -> Result<Self::Success, Self::Error, NewCTX>
     where
         F: FnOnce(Self::CTX) -> NewCTX,
