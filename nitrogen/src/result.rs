@@ -12,6 +12,10 @@ pub trait ResultExt {
     where
         Err: StdErrorTrait + 'static,
         F: FnOnce() -> Err;
+
+    fn map_ctx<NewCTX, F>(self, f: F) -> Result<Self::Success, Self::Error, NewCTX>
+    where
+        F: FnOnce(Self::CTX) -> NewCTX;
 }
 
 impl<T, E> ResultExt for std::result::Result<T, E>
@@ -33,6 +37,18 @@ where
             Err(e) => Err(Nitro::without_ctx(e).raise(err())),
         }
     }
+
+    fn map_ctx<NewCTX, F>(self, f: F) -> Result<Self::Success, Self::Error, NewCTX>
+    where
+        F: FnOnce(Self::CTX) -> NewCTX,
+    {
+        let res = match self {
+            Ok(e) => Ok(e),
+            Err(err) => Err(Nitro::without_ctx(err)),
+        };
+
+        res.map_err(|e| e.map_ctx(f))
+    }
 }
 
 impl<T, E, CTX> ResultExt for std::result::Result<T, Nitro<E, CTX>>
@@ -53,5 +69,12 @@ where
             Ok(v) => Ok(v),
             Err(e) => Err(e.raise(err())),
         }
+    }
+
+    fn map_ctx<NewCTX, F>(self, f: F) -> Result<Self::Success, Self::Error, NewCTX>
+    where
+        F: FnOnce(Self::CTX) -> NewCTX,
+    {
+        self.map_err(|e| e.map_ctx(f))
     }
 }
