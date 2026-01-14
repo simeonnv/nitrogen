@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use nitrogen::Nitro;
+use nitrogen::*;
 
 #[derive(Debug)]
 pub struct Error;
@@ -21,8 +21,8 @@ impl Display for NewError {
 }
 
 fn main() {
-    let error = Nitro::without_ctx(Error);
-    let new_err = error.raise(NewError(67));
+    let error = Err::<(), _>(Error);
+    let new_err = error.or_raise(|| NewError(67));
     dbg!(new_err);
 
     println!("Hello, world!");
